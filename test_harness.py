@@ -11,7 +11,11 @@ class TicTacToeTestSuite(unittest.TestCase):
         game_state['last_move_was_valid'] = True
 
         next_move = 'c3'
-        
+       
+        # apply transformation
+        occupied_board_positions = game_state['owned_by_x'] + game_state['owned_by_zero']
+        game_state['last_move_was_valid'] = not next_move in occupied_board_positions
+
         # assert
         self.assertFalse(game_state['last_move_was_valid'])
         
