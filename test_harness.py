@@ -18,6 +18,21 @@ class TicTacToeTestSuite(unittest.TestCase):
 
         # assert
         self.assertFalse(game_state['last_move_was_valid'])
-        
+       
+    def test_that_game_engine_correctly_verifies_consistency(self):
+       
+        # define input
+        game_state = {}
+        game_state['owned_by_x'] = []
+        game_state['owned_by_zero'] = []
+        who_moves_next = 2
+        why_the_game_ended_reason_id = 0
+
+        # apply_transformation
+
+
+        # assert
+        self.assertEqual(why_the_game_ended_reason_id, 7)
+
 unittest.main()
 
