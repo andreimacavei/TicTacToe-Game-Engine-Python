@@ -19,7 +19,7 @@ class TicTacToeTestSuite(unittest.TestCase):
         # assert
         self.assertFalse(game_state['last_move_was_valid'])
        
-    def test_that_game_engine_correctly_verifies_consistency(self):
+    def test_that_game_engine_correctly_verifies_consistency_1(self):
        
         # define input
         game_state = {}
