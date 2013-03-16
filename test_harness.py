@@ -67,6 +67,11 @@ class TicTacToeTestSuite(unittest.TestCase):
         game_state['owned_by_zero'] = ['a2']
         why_the_game_ended_reason_id = 0
        
+        # apply_transformation
+        size_of_owned_by_x = len(game_state['owned_by_x'])
+        size_of_owned_by_zero = len(game_state['owned_by_zero'])
+        if size_of_owned_by_x <  size_of_owned_by_zero:
+            why_the_game_ended_reason_id = 8
     
 
         # assert
