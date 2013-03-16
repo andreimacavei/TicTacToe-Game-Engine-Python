@@ -49,6 +49,12 @@ class TicTacToeTestSuite(unittest.TestCase):
         why_the_game_ended_reason_id = 0
 
         # apply_transformation
+        size_of_owned_by_x = len(game_state['owned_by_x'])
+        size_of_owned_by_zero = len(game_state['owned_by_zero'])
+        if size_of_owned_by_x == 1 + size_of_owned_by_zero:
+            player_role_id = 2
+        if player_role_id != who_moves_next:
+            why_the_game_ended_reason_id = 7
 
         # assert
         self.assertEqual(why_the_game_ended_reason_id, 7)
