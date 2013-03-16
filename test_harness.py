@@ -76,6 +76,18 @@ class TicTacToeTestSuite(unittest.TestCase):
         # assert
         self.assertEqual(why_the_game_ended_reason_id, 8)
 
+    def test_that_game_engine_correctly_verifies_consistency_4(self):
+
+        # define input
+        game_state = {}
+        game_state['owned_by_x'] = ['a1', 'a2']
+        game_state['owned_by_zero'] = []
+        why_the_game_ended_reason_id = 0
+
+        # apply_transformation
+
+        # assert
+        self.assertEqual(why_the_game_ended_reason_id, 8)
 
 unittest.main()
 
