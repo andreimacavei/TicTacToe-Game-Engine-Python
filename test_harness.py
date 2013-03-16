@@ -31,9 +31,9 @@ class TicTacToeTestSuite(unittest.TestCase):
         # apply_transformation
         size_of_owned_by_x = len(game_state['owned_by_x'])
         size_of_owned_by_zero = len(game_state['owned_by_zero'])
-        if size_of_owned_by_x == size_of_owned_by_zero :
+        if size_of_owned_by_x == size_of_owned_by_zero:
             player_role_id = 1
-        if player_role_id != who_moves_next :
+        if player_role_id != who_moves_next:
             why_the_game_ended_reason_id = 7
 
         # assert
