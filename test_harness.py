@@ -29,6 +29,22 @@ class GameEngine():
         return why_the_game_ended_reason_id
 
     @staticmethod
+    def verify_readiness_of_game_bot(raw_response):
+            
+        if (type(raw_response) is not dict):
+            return_code = 1
+            return return_code
+        
+        if ('status' not in raw_response):
+            return_code = 2
+            return return_code
+
+        if (raw_response['status'] != 'ready'):
+            return_code = 3
+            return return_code
+
+
+    @staticmethod
     def start_game():
         output_of_game_engine_input_of_player_1 = sys.argv[0]
         output_of_player_1_input_of_game_engine = sys.argv[1]
@@ -135,8 +151,7 @@ class TicTacToeTestSuite(unittest.TestCase):
         return_code = 0
         
         # apply transformation
-        if (type(raw_response) is not dict):
-            return_code = 1
+        return_code = GameEngine.verify_readiness_of_game_bot(raw_response)
 
         # assert
         self.assertEqual(return_code, 1)
@@ -148,8 +163,7 @@ class TicTacToeTestSuite(unittest.TestCase):
         return_code = 0
         
         # apply transformation
-        if ('status' not in raw_response):
-            return_code = 2
+        return_code = GameEngine.verify_readiness_of_game_bot(raw_response)
 
         # assert
         self.assertEqual(return_code, 2)
@@ -160,10 +174,8 @@ class TicTacToeTestSuite(unittest.TestCase):
         raw_response = {'status': 'not ready'}
         return_code = 0
         
-        # apply transformation
-        if (raw_response['status'] != 'ready'):
-            return_code = 3
-        
+        # apply transformation 
+        return_code = GameEngine.verify_readiness_of_game_bot(raw_response)
         # assert
         self.assertEqual(return_code, 3)
 
