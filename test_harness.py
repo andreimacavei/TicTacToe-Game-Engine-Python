@@ -1,5 +1,5 @@
 import unittest
-
+import json
 import sys
 
 class GameEngine():
@@ -49,10 +49,10 @@ class GameEngine():
 
     @staticmethod
     def start_game():
-        output_of_game_engine_input_of_player_1 = sys.argv[0]
-        output_of_player_1_input_of_game_engine = sys.argv[1]
-        output_of_game_engine_input_of_player_2 = sys.argv[2]
-        output_of_player_2_input_of_game_engine = sys.argv[3]
+        output_of_game_engine_input_of_player_1 = sys.argv[1]
+        output_of_player_1_input_of_game_engine = sys.argv[2]
+        output_of_game_engine_input_of_player_2 = sys.argv[3]
+        output_of_player_2_input_of_game_engine = sys.argv[4]
 
         request_status = {'request': 'status'}
         f = open(output_of_game_engine_input_of_player_1, 'w')
@@ -183,5 +183,6 @@ class TicTacToeTestSuite(unittest.TestCase):
         self.assertEqual(return_code, 3)
 
 
-unittest.main()
+#unittest.main()
+GameEngine.start_game()
 
