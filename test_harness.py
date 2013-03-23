@@ -154,7 +154,15 @@ class TicTacToeTestSuite(unittest.TestCase):
         # assert
         self.assertEqual(return_code, 2)
 
-
+    def test_that_status_key_of_parsed_response_points_to_ready(self):
+        
+        # define input
+        raw_response = {'status': 'not ready'}
+        return_code = 0
+        
+        
+        # assert
+        self.assertEqual(return_code, 3)
 
 
 unittest.main()
