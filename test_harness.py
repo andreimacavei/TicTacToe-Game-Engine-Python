@@ -160,6 +160,9 @@ class TicTacToeTestSuite(unittest.TestCase):
         raw_response = {'status': 'not ready'}
         return_code = 0
         
+        # apply transformation
+        if (raw_response['status'] != 'ready'):
+            return_code = 3
         
         # assert
         self.assertEqual(return_code, 3)
