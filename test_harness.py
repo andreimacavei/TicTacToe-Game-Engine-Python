@@ -140,6 +140,18 @@ class TicTacToeTestSuite(unittest.TestCase):
 
         # assert
         self.assertEqual(return_code, 1)
+    
+    def test_that_parsed_response_contains_status_key(self):
+
+        # define input
+        raw_response = {}
+        return_code = 0
+
+        # assert
+        self.assertEqual(return_code, 2)
+
+
+
 
 unittest.main()
 
