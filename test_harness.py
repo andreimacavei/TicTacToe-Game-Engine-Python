@@ -1,5 +1,7 @@
 import unittest
 
+import sys
+
 class GameEngine():
 
     @staticmethod
@@ -26,7 +28,25 @@ class GameEngine():
 
         return why_the_game_ended_reason_id
 
+    @staticmethod
+    def start_game():
+        output_of_game_engine_input_of_player_1 = sys.argv[0]
+        output_of_player_1_input_of_game_engine = sys.argv[1]
+        output_of_game_engine_input_of_player_2 = sys.argv[2]
+        output_of_player_2_input_of_game_engine = sys.argv[3]
 
+        request_status = {'request': 'status'}
+        f = open(output_of_game_engine_input_of_player_1, 'w')
+        print >> f, json.dumps(request_status)
+        f.close()
+
+        f = open(output_of_player_1_input_of_game_engine, 'r')
+        try:
+            raw_response = f.read()
+        finally:
+            f.close()
+        
+        parsed_response = json.loads(raw_response)
 
 
 class TicTacToeTestSuite(unittest.TestCase):
