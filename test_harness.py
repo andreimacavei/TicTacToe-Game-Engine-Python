@@ -29,17 +29,17 @@ class GameEngine():
         return why_the_game_ended_reason_id
 
     @staticmethod
-    def verify_readiness_of_game_bot(raw_response):
+    def verify_readiness_of_game_bot(parsed_response):
             
-        if (type(raw_response) is not dict):
+        if (type(parsed_response) is not dict):
             return_code = 1
             return return_code
         
-        if ('status' not in raw_response):
+        if ('status' not in parsed_response):
             return_code = 2
             return return_code
 
-        if (raw_response['status'] != 'ready'):
+        if (parsed_response['status'] != 'ready'):
             return_code = 3
             return return_code
 
@@ -147,11 +147,11 @@ class TicTacToeTestSuite(unittest.TestCase):
     def test_that_parsed_response_is_a_hash(self):
 
         # define input
-        raw_response = []
+        parsed_response = []
         return_code = 0
         
         # apply transformation
-        return_code = GameEngine.verify_readiness_of_game_bot(raw_response)
+        return_code = GameEngine.verify_readiness_of_game_bot(parsed_response)
 
         # assert
         self.assertEqual(return_code, 1)
@@ -159,11 +159,11 @@ class TicTacToeTestSuite(unittest.TestCase):
     def test_that_parsed_response_contains_status_key(self):
 
         # define input
-        raw_response = {}
+        parsed_response = {}
         return_code = 0
         
         # apply transformation
-        return_code = GameEngine.verify_readiness_of_game_bot(raw_response)
+        return_code = GameEngine.verify_readiness_of_game_bot(parsed_response)
 
         # assert
         self.assertEqual(return_code, 2)
@@ -171,11 +171,11 @@ class TicTacToeTestSuite(unittest.TestCase):
     def test_that_status_key_of_parsed_response_points_to_ready(self):
         
         # define input
-        raw_response = {'status': 'not ready'}
+        parsed_response = {'status': 'not ready'}
         return_code = 0
         
         # apply transformation 
-        return_code = GameEngine.verify_readiness_of_game_bot(raw_response)
+        return_code = GameEngine.verify_readiness_of_game_bot(parsed_response)
         # assert
         self.assertEqual(return_code, 3)
 
