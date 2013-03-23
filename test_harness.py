@@ -1,5 +1,34 @@
 import unittest
 
+class GameEngine():
+
+    @staticmethod
+    def verify_game_state_consistency(game_state, who_moves_next, player_role_id):
+
+        why_the_game_ended_reason_id = 0
+        size_of_owned_by_x = len(game_state['owned_by_x'])
+        size_of_owned_by_zero = len(game_state['owned_by_zero'])
+
+        if size_of_owned_by_x == size_of_owned_by_zero:
+            player_role_id = 1
+
+        if size_of_owned_by_x == 1 + size_of_owned_by_zero:
+            player_role_id = 2
+
+        if player_role_id != who_moves_next:
+            why_the_game_ended_reason_id = 7
+
+        if size_of_owned_by_x < size_of_owned_by_zero:
+            why_the_game_ended_reason_id = 8
+
+        if size_of_owned_by_x > 1 + size_of_owned_by_zero:
+            why_the_game_ended_reason_id = 8
+
+        return why_the_game_ended_reason_id
+
+
+
+
 class TicTacToeTestSuite(unittest.TestCase):
 
     def test_that_a_player_cannot_move_into_an_already_occupied_board_cell(self):
@@ -26,15 +55,10 @@ class TicTacToeTestSuite(unittest.TestCase):
         game_state['owned_by_x'] = []
         game_state['owned_by_zero'] = []
         who_moves_next = 2
-        why_the_game_ended_reason_id = 0
+        player_role_id = 0
 
         # apply_transformation
-        size_of_owned_by_x = len(game_state['owned_by_x'])
-        size_of_owned_by_zero = len(game_state['owned_by_zero'])
-        if size_of_owned_by_x == size_of_owned_by_zero:
-            player_role_id = 1
-        if player_role_id != who_moves_next:
-            why_the_game_ended_reason_id = 7
+        why_the_game_ended_reason_id = GameEngine.verify_game_state_consistency(game_state, who_moves_next, player_role_id)
 
         # assert
         self.assertEqual(why_the_game_ended_reason_id, 7)
@@ -46,15 +70,10 @@ class TicTacToeTestSuite(unittest.TestCase):
         game_state['owned_by_x'] = ['a1']
         game_state['owned_by_zero'] = []
         who_moves_next = 1
-        why_the_game_ended_reason_id = 0
+        player_role_id = 1
 
         # apply_transformation
-        size_of_owned_by_x = len(game_state['owned_by_x'])
-        size_of_owned_by_zero = len(game_state['owned_by_zero'])
-        if size_of_owned_by_x == 1 + size_of_owned_by_zero:
-            player_role_id = 2
-        if player_role_id != who_moves_next:
-            why_the_game_ended_reason_id = 7
+        why_the_game_ended_reason_id = GameEngine.verify_game_state_consistency(game_state, who_moves_next, player_role_id)
 
         # assert
         self.assertEqual(why_the_game_ended_reason_id, 7)
@@ -65,13 +84,11 @@ class TicTacToeTestSuite(unittest.TestCase):
         game_state = {}
         game_state['owned_by_x'] = []
         game_state['owned_by_zero'] = ['a2']
-        why_the_game_ended_reason_id = 0
+        who_moves_next = 1
+        player_role_id = 0
 
         # apply_transformation
-        size_of_owned_by_x = len(game_state['owned_by_x'])
-        size_of_owned_by_zero = len(game_state['owned_by_zero'])
-        if size_of_owned_by_x < size_of_owned_by_zero:
-            why_the_game_ended_reason_id = 8
+        why_the_game_ended_reason_id = GameEngine.verify_game_state_consistency(game_state, who_moves_next, player_role_id)
 
         # assert
         self.assertEqual(why_the_game_ended_reason_id, 8)
@@ -82,16 +99,15 @@ class TicTacToeTestSuite(unittest.TestCase):
         game_state = {}
         game_state['owned_by_x'] = ['a1', 'a2']
         game_state['owned_by_zero'] = []
-        why_the_game_ended_reason_id = 0
+        who_moves_next = 1
+        player_role_id = 0
 
         # apply_transformation
-        size_of_owned_by_x = len(game_state['owned_by_x'])
-        size_of_owned_by_zero = len(game_state['owned_by_zero'])
-        if size_of_owned_by_x > 1 + size_of_owned_by_zero:
-            why_the_game_ended_reason_id = 8
+        why_the_game_ended_reason_id = GameEngine.verify_game_state_consistency(game_state, who_moves_next, player_role_id)
 
         # assert
         self.assertEqual(why_the_game_ended_reason_id, 8)
+
 
 unittest.main()
 
