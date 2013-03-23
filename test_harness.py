@@ -146,6 +146,10 @@ class TicTacToeTestSuite(unittest.TestCase):
         # define input
         raw_response = {}
         return_code = 0
+        
+        # apply transformation
+        if ('status' not in raw_response):
+            return_code = 2
 
         # assert
         self.assertEqual(return_code, 2)
