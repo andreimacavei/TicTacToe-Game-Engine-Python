@@ -128,6 +128,14 @@ class TicTacToeTestSuite(unittest.TestCase):
         # assert
         self.assertEqual(why_the_game_ended_reason_id, 8)
 
+    def test_that_parsed_response_is_a_hash(self):
+
+        # define input
+        raw_response = []
+        return_code = 0
+
+        # assert
+        self.assertEqual(return_code, 1)
 
 unittest.main()
 
