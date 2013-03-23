@@ -133,6 +133,10 @@ class TicTacToeTestSuite(unittest.TestCase):
         # define input
         raw_response = []
         return_code = 0
+        
+        # apply transformation
+        if (type(raw_response) is not dict):
+            return_code = 1
 
         # assert
         self.assertEqual(return_code, 1)
