@@ -30,7 +30,8 @@ class GameEngine():
 
     @staticmethod
     def verify_readiness_of_game_bot(parsed_response):
-            
+        return_code = 0 
+         
         if (type(parsed_response) is not dict):
             return_code = 1
             return return_code
@@ -42,6 +43,8 @@ class GameEngine():
         if (parsed_response['status'] != 'ready'):
             return_code = 3
             return return_code
+
+        return return_code
 
 
     @staticmethod
