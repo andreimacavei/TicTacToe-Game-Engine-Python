@@ -83,23 +83,6 @@ def start_game():
 
 class TicTacToeTestSuite(unittest.TestCase):
     
-    # define constants
-
-    DRAW = 0
-    PLAYER_ONE_WON = 1
-    PLAYER_TWO_WON = 2
-    PLAYER_ONE_NOT_READY = 3
-    PLAYER_TWO_NOT_READY = 4
-    ILLEGAL_MOVE_BY_PLAYER_ONE = 5
-    ILLEGAL_MOVE_BY_PLAYER_TWO = 6
-    CROSS_CHECK_FAILED = 7
-    GAME_INCONSISTENCY = 8
-
-    EVERYTHING_OK = 10
-    INPUT_NOT_A_HASH = 11
-    HASH_WITHOUT_STATUS_KEY = 12
-    VALUE_FOR_STATUS_IS_NOT_READY = 13
-
     def test_that_a_player_cannot_move_into_an_already_occupied_board_cell(self):
         # define_input
         game_state = {}
