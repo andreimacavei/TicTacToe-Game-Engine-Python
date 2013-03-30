@@ -2,87 +2,83 @@ import unittest
 import json
 import sys
 
-class GameEngine():
     
-    # define constants
-    DRAW = 0
-    PLAYER_ONE_WON = 1
-    PLAYER_TWO_WON = 2
-    PLAYER_ONE_NOT_READY = 3
-    PLAYER_TWO_NOT_READY = 4
-    ILLEGAL_MOVE_BY_PLAYER_ONE = 5
-    ILLEGAL_MOVE_BY_PLAYER_TWO = 6
-    CROSS_CHECK_FAILED = 7
-    GAME_INCONSISTENCY = 8
+# define constants
+DRAW = 0
+PLAYER_ONE_WON = 1
+PLAYER_TWO_WON = 2
+PLAYER_ONE_NOT_READY = 3
+PLAYER_TWO_NOT_READY = 4
+ILLEGAL_MOVE_BY_PLAYER_ONE = 5
+ILLEGAL_MOVE_BY_PLAYER_TWO = 6
+CROSS_CHECK_FAILED = 7
+GAME_INCONSISTENCY = 8
 
-    EVERYTHING_OK = 10
-    INPUT_NOT_A_HASH = 11
-    HASH_WITHOUT_STATUS_KEY = 12
-    VALUE_FOR_STATUS_IS_NOT_READY = 13
+EVERYTHING_OK = 10
+INPUT_NOT_A_HASH = 11
+HASH_WITHOUT_STATUS_KEY = 12
+VALUE_FOR_STATUS_IS_NOT_READY = 13
 
-    @staticmethod
-    def verify_game_state_consistency(game_state, who_moves_next, player_role_id):
+def verify_game_state_consistency(game_state, who_moves_next, player_role_id):
 
-        why_the_game_ended_reason_id = DRAW
-        size_of_owned_by_x = len(game_state['owned_by_x'])
-        size_of_owned_by_zero = len(game_state['owned_by_zero'])
+    why_the_game_ended_reason_id = DRAW
+    size_of_owned_by_x = len(game_state['owned_by_x'])
+    size_of_owned_by_zero = len(game_state['owned_by_zero'])
 
-        if size_of_owned_by_x == size_of_owned_by_zero:
-            player_role_id = 1
+    if size_of_owned_by_x == size_of_owned_by_zero:
+        player_role_id = 1
 
-        if size_of_owned_by_x == 1 + size_of_owned_by_zero:
-            player_role_id = 2
+    if size_of_owned_by_x == 1 + size_of_owned_by_zero:
+        player_role_id = 2
 
-        if player_role_id != who_moves_next:
-            why_the_game_ended_reason_id = CROSS_CHECK_FAILED
+    if player_role_id != who_moves_next:
+        why_the_game_ended_reason_id = CROSS_CHECK_FAILED
 
-        if size_of_owned_by_x < size_of_owned_by_zero:
-            why_the_game_ended_reason_id = GAME_INCONSISTENCY
+    if size_of_owned_by_x < size_of_owned_by_zero:
+        why_the_game_ended_reason_id = GAME_INCONSISTENCY
 
-        if size_of_owned_by_x > 1 + size_of_owned_by_zero:
-            why_the_game_ended_reason_id = GAME_INCONSISTENCY
+    if size_of_owned_by_x > 1 + size_of_owned_by_zero:
+        why_the_game_ended_reason_id = GAME_INCONSISTENCY
 
-        return why_the_game_ended_reason_id
+    return why_the_game_ended_reason_id
 
-    @staticmethod
-    def verify_readiness_of_game_bot(parsed_response):
-         
-        if (type(parsed_response) is not dict):
-            return INPUT_NOT_A_HASH
-        
-        if ('status' not in parsed_response):
-            return HASH_WITHOUT_STATUS_KEY
+def verify_readiness_of_game_bot(parsed_response):
+     
+    if (type(parsed_response) is not dict):
+        return INPUT_NOT_A_HASH
+    
+    if ('status' not in parsed_response):
+        return HASH_WITHOUT_STATUS_KEY
 
-        if (parsed_response['status'] != 'ready'):
-            return VALUE_FOR_STATUS_IS_NOT_READY
+    if (parsed_response['status'] != 'ready'):
+        return VALUE_FOR_STATUS_IS_NOT_READY
 
-        return EVERYTHING_OK
+    return EVERYTHING_OK
 
 
-    @staticmethod
-    def start_game():
-        output_of_game_engine_input_of_player_1 = sys.argv[1]
-        output_of_player_1_input_of_game_engine = sys.argv[2]
-        output_of_game_engine_input_of_player_2 = sys.argv[3]
-        output_of_player_2_input_of_game_engine = sys.argv[4]
+def start_game():
+    output_of_game_engine_input_of_player_1 = sys.argv[1]
+    output_of_player_1_input_of_game_engine = sys.argv[2]
+    output_of_game_engine_input_of_player_2 = sys.argv[3]
+    output_of_player_2_input_of_game_engine = sys.argv[4]
 
-        request_status = {'request': 'status'}
-        
-        print "waiting to write"
+    request_status = {'request': 'status'}
+    
+    print "waiting to write"
 
-        f = open(output_of_game_engine_input_of_player_1, 'w')
-        print >> f, json.dumps(request_status)
+    f = open(output_of_game_engine_input_of_player_1, 'w')
+    print >> f, json.dumps(request_status)
+    f.close()
+    
+    print "waiting to read"
+
+    f = open(output_of_player_1_input_of_game_engine, 'r')
+    try:
+        raw_response = f.read()
+    finally:
         f.close()
-        
-        print "waiting to read"
-
-        f = open(output_of_player_1_input_of_game_engine, 'r')
-        try:
-            raw_response = f.read()
-        finally:
-            f.close()
-        
-        parsed_response = json.loads(raw_response)
+    
+    parsed_response = json.loads(raw_response)
 
 
 class TicTacToeTestSuite(unittest.TestCase):
@@ -131,7 +127,7 @@ class TicTacToeTestSuite(unittest.TestCase):
         player_role_id = 0
 
         # apply_transformation
-        why_the_game_ended_reason_id = GameEngine.verify_game_state_consistency(game_state, who_moves_next, player_role_id)
+        why_the_game_ended_reason_id = verify_game_state_consistency(game_state, who_moves_next, player_role_id)
 
         # assert
         self.assertEqual(why_the_game_ended_reason_id, CROSS_CHECK_FAILED)
@@ -146,7 +142,7 @@ class TicTacToeTestSuite(unittest.TestCase):
         player_role_id = 1
 
         # apply_transformation
-        why_the_game_ended_reason_id = GameEngine.verify_game_state_consistency(game_state, who_moves_next, player_role_id)
+        why_the_game_ended_reason_id = verify_game_state_consistency(game_state, who_moves_next, player_role_id)
 
         # assert
         self.assertEqual(why_the_game_ended_reason_id, CROSS_CHECK_FAILED)
@@ -161,7 +157,7 @@ class TicTacToeTestSuite(unittest.TestCase):
         player_role_id = 0
 
         # apply_transformation
-        why_the_game_ended_reason_id = GameEngine.verify_game_state_consistency(game_state, who_moves_next, player_role_id)
+        why_the_game_ended_reason_id = verify_game_state_consistency(game_state, who_moves_next, player_role_id)
 
         # assert
         self.assertEqual(why_the_game_ended_reason_id, GAME_INCONSISTENCY)
@@ -176,7 +172,7 @@ class TicTacToeTestSuite(unittest.TestCase):
         player_role_id = 0
 
         # apply_transformation
-        why_the_game_ended_reason_id = GameEngine.verify_game_state_consistency(game_state, who_moves_next, player_role_id)
+        why_the_game_ended_reason_id = verify_game_state_consistency(game_state, who_moves_next, player_role_id)
 
         # assert
         self.assertEqual(why_the_game_ended_reason_id, GAME_INCONSISTENCY)
@@ -188,10 +184,10 @@ class TicTacToeTestSuite(unittest.TestCase):
         return_code = 0
         
         # apply transformation
-        return_code = GameEngine.verify_readiness_of_game_bot(parsed_response)
+        return_code = verify_readiness_of_game_bot(parsed_response)
 
         # assert
-        self.assertEqual(return_code, 1)
+        self.assertEqual(return_code, 11)
     
     def test_that_parsed_response_contains_status_key(self):
 
@@ -200,10 +196,10 @@ class TicTacToeTestSuite(unittest.TestCase):
         return_code = 0
         
         # apply transformation
-        return_code = GameEngine.verify_readiness_of_game_bot(parsed_response)
+        return_code = verify_readiness_of_game_bot(parsed_response)
 
         # assert
-        self.assertEqual(return_code, 2)
+        self.assertEqual(return_code, 12)
 
     def test_that_status_key_of_parsed_response_points_to_ready(self):
         
@@ -212,11 +208,11 @@ class TicTacToeTestSuite(unittest.TestCase):
         return_code = 0
         
         # apply transformation 
-        return_code = GameEngine.verify_readiness_of_game_bot(parsed_response)
+        return_code = verify_readiness_of_game_bot(parsed_response)
         # assert
-        self.assertEqual(return_code, 3)
+        self.assertEqual(return_code, 13)
 
 
 unittest.main()
-#GameEngine.start_game()
+#start_game()
 
