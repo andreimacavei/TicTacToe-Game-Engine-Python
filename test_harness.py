@@ -2,7 +2,7 @@ import unittest
 import json
 import sys
 
-    
+
 # define constants
 DRAW = 0
 PLAYER_ONE_WON = 1
@@ -18,6 +18,25 @@ EVERYTHING_OK = 10
 INPUT_NOT_A_HASH = 11
 HASH_WITHOUT_STATUS_KEY = 12
 VALUE_FOR_STATUS_IS_NOT_READY = 13
+
+STATUS_MESSAGES = {
+
+    DRAW: 'Draw',
+    PLAYER_ONE_WON: 'Player 1 won',
+    PLAYER_TWO_WON: 'Player 2 won',
+    PLAYER_ONE_NOT_READY: 'Player 1 is not ready',
+    PLAYER_TWO_NOT_READY: 'Player 2 is not ready',
+    ILLEGAL_MOVE_BY_PLAYER_ONE: 'Illegal move by player 1',
+    ILLEGAL_MOVE_BY_PLAYER_TWO: 'Illegal move by player 2',
+    CROSS_CHECK_FAILED: 'Cross check failed',
+    GAME_INCONSISTENCY: 'Game inconsistency',
+
+    EVERYTHING_OK: 'Everything is ok',
+    INPUT_NOT_A_HASH: 'The input i recieved was not a hash',
+    HASH_WITHOUT_STATUS_KEY: 'Hash i recieved does not have a status key',
+    VALUE_FOR_STATUS_IS_NOT_READY: 'The status key does not point to ready'
+
+}
 
 def verify_game_state_consistency(game_state, who_moves_next, player_role_id):
 
@@ -43,10 +62,10 @@ def verify_game_state_consistency(game_state, who_moves_next, player_role_id):
     return why_the_game_ended_reason_id
 
 def verify_readiness_of_game_bot(parsed_response):
-     
+
     if (type(parsed_response) is not dict):
         return INPUT_NOT_A_HASH
-    
+
     if ('status' not in parsed_response):
         return HASH_WITHOUT_STATUS_KEY
 
@@ -63,13 +82,14 @@ def start_game():
     output_of_player_2_input_of_game_engine = sys.argv[4]
 
     request_status = {'request': 'status'}
-    
+
+    # Verify readiness of player 1
     print "waiting to write"
 
     f = open(output_of_game_engine_input_of_player_1, 'w')
     print >> f, json.dumps(request_status)
     f.close()
-    
+
     print "waiting to read"
 
     f = open(output_of_player_1_input_of_game_engine, 'r')
@@ -77,12 +97,43 @@ def start_game():
         raw_response = f.read()
     finally:
         f.close()
-    
-    parsed_response = json.loads(raw_response)
+    try:
+        parsed_response = json.loads(raw_response)
+    except:
+        print "player 2 won"
+        exit
+    return_code = verify_readiness_of_game_bot(parsed_response)
+    if (return_code != EVERYTHING_OK):
+        print STATUS_MESSAGES[return_code]
+        exit
 
+    # Verify readiness of player 2
+    print "waiting to write"
+
+    f = open(output_of_game_engine_input_of_player_2, 'w')
+    print >> f, json.dumps(request_status)
+    f.close()
+
+    print "waiting to read"
+
+    f = open(output_of_player_2_input_of_game_engine, 'r')
+    try:
+        raw_response = f.read()
+    finally:
+        f.close()
+    try:
+        parsed_response = json.loads(raw_response)
+    except:
+        print "player 1 won"
+        exit
+
+    return_code = verify_readiness_of_game_bot(parsed_response)
+    if (return_code != EVERYTHING_OK):
+        print STATUS_MESSAGES[return_code]
+        exit
 
 class TicTacToeTestSuite(unittest.TestCase):
-    
+
     def test_that_a_player_cannot_move_into_an_already_occupied_board_cell(self):
         # define_input
         game_state = {}
@@ -164,20 +215,18 @@ class TicTacToeTestSuite(unittest.TestCase):
 
         # define input
         parsed_response = []
-        return_code = 0
-        
+
         # apply transformation
         return_code = verify_readiness_of_game_bot(parsed_response)
 
         # assert
         self.assertEqual(return_code, INPUT_NOT_A_HASH)
-    
+
     def test_that_parsed_response_contains_status_key(self):
 
         # define input
         parsed_response = {}
-        return_code = 0
-        
+
         # apply transformation
         return_code = verify_readiness_of_game_bot(parsed_response)
 
@@ -185,17 +234,16 @@ class TicTacToeTestSuite(unittest.TestCase):
         self.assertEqual(return_code, HASH_WITHOUT_STATUS_KEY)
 
     def test_that_status_key_of_parsed_response_points_to_ready(self):
-        
+
         # define input
         parsed_response = {'status': 'not ready'}
-        return_code = 0
-        
-        # apply transformation 
+
+        # apply transformation
         return_code = verify_readiness_of_game_bot(parsed_response)
         # assert
         self.assertEqual(return_code, VALUE_FOR_STATUS_IS_NOT_READY)
 
 
-unittest.main()
-#start_game()
+#unittest.main()
+start_game()
 
