@@ -3,11 +3,27 @@ import json
 import sys
 
 class GameEngine():
+    
+    # define constants
+    DRAW = 0
+    PLAYER_ONE_WON = 1
+    PLAYER_TWO_WON = 2
+    PLAYER_ONE_NOT_READY = 3
+    PLAYER_TWO_NOT_READY = 4
+    ILLEGAL_MOVE_BY_PLAYER_ONE = 5
+    ILLEGAL_MOVE_BY_PLAYER_TWO = 6
+    CROSS_CHECK_FAILED = 7
+    GAME_INCONSISTENCY = 8
+
+    EVERYTHING_OK = 10
+    INPUT_NOT_A_HASH = 11
+    HASH_WITHOUT_STATUS_KEY = 12
+    VALUE_FOR_STATUS_IS_NOT_READY = 13
 
     @staticmethod
     def verify_game_state_consistency(game_state, who_moves_next, player_role_id):
 
-        why_the_game_ended_reason_id = 0
+        why_the_game_ended_reason_id = DRAW
         size_of_owned_by_x = len(game_state['owned_by_x'])
         size_of_owned_by_zero = len(game_state['owned_by_zero'])
 
@@ -18,33 +34,29 @@ class GameEngine():
             player_role_id = 2
 
         if player_role_id != who_moves_next:
-            why_the_game_ended_reason_id = 7
+            why_the_game_ended_reason_id = CROSS_CHECK_FAILED
 
         if size_of_owned_by_x < size_of_owned_by_zero:
-            why_the_game_ended_reason_id = 8
+            why_the_game_ended_reason_id = GAME_INCONSISTENCY
 
         if size_of_owned_by_x > 1 + size_of_owned_by_zero:
-            why_the_game_ended_reason_id = 8
+            why_the_game_ended_reason_id = GAME_INCONSISTENCY
 
         return why_the_game_ended_reason_id
 
     @staticmethod
     def verify_readiness_of_game_bot(parsed_response):
-        return_code = 0 
          
         if (type(parsed_response) is not dict):
-            return_code = 1
-            return return_code
+            return INPUT_NOT_A_HASH
         
         if ('status' not in parsed_response):
-            return_code = 2
-            return return_code
+            return HASH_WITHOUT_STATUS_KEY
 
         if (parsed_response['status'] != 'ready'):
-            return_code = 3
-            return return_code
+            return VALUE_FOR_STATUS_IS_NOT_READY
 
-        return return_code
+        return EVERYTHING_OK
 
 
     @staticmethod
@@ -55,9 +67,14 @@ class GameEngine():
         output_of_player_2_input_of_game_engine = sys.argv[4]
 
         request_status = {'request': 'status'}
+        
+        print "waiting to write"
+
         f = open(output_of_game_engine_input_of_player_1, 'w')
         print >> f, json.dumps(request_status)
         f.close()
+        
+        print "waiting to read"
 
         f = open(output_of_player_1_input_of_game_engine, 'r')
         try:
@@ -69,6 +86,23 @@ class GameEngine():
 
 
 class TicTacToeTestSuite(unittest.TestCase):
+    
+    # define constants
+
+    DRAW = 0
+    PLAYER_ONE_WON = 1
+    PLAYER_TWO_WON = 2
+    PLAYER_ONE_NOT_READY = 3
+    PLAYER_TWO_NOT_READY = 4
+    ILLEGAL_MOVE_BY_PLAYER_ONE = 5
+    ILLEGAL_MOVE_BY_PLAYER_TWO = 6
+    CROSS_CHECK_FAILED = 7
+    GAME_INCONSISTENCY = 8
+
+    EVERYTHING_OK = 10
+    INPUT_NOT_A_HASH = 11
+    HASH_WITHOUT_STATUS_KEY = 12
+    VALUE_FOR_STATUS_IS_NOT_READY = 13
 
     def test_that_a_player_cannot_move_into_an_already_occupied_board_cell(self):
         # define_input
@@ -100,7 +134,7 @@ class TicTacToeTestSuite(unittest.TestCase):
         why_the_game_ended_reason_id = GameEngine.verify_game_state_consistency(game_state, who_moves_next, player_role_id)
 
         # assert
-        self.assertEqual(why_the_game_ended_reason_id, 7)
+        self.assertEqual(why_the_game_ended_reason_id, CROSS_CHECK_FAILED)
 
     def test_that_game_engine_correctly_verifies_consistency_2(self):
 
@@ -115,7 +149,7 @@ class TicTacToeTestSuite(unittest.TestCase):
         why_the_game_ended_reason_id = GameEngine.verify_game_state_consistency(game_state, who_moves_next, player_role_id)
 
         # assert
-        self.assertEqual(why_the_game_ended_reason_id, 7)
+        self.assertEqual(why_the_game_ended_reason_id, CROSS_CHECK_FAILED)
 
     def test_that_game_engine_correctly_verifies_consistency_3(self):
 
@@ -130,7 +164,7 @@ class TicTacToeTestSuite(unittest.TestCase):
         why_the_game_ended_reason_id = GameEngine.verify_game_state_consistency(game_state, who_moves_next, player_role_id)
 
         # assert
-        self.assertEqual(why_the_game_ended_reason_id, 8)
+        self.assertEqual(why_the_game_ended_reason_id, GAME_INCONSISTENCY)
 
     def test_that_game_engine_correctly_verifies_consistency_4(self):
 
@@ -145,7 +179,7 @@ class TicTacToeTestSuite(unittest.TestCase):
         why_the_game_ended_reason_id = GameEngine.verify_game_state_consistency(game_state, who_moves_next, player_role_id)
 
         # assert
-        self.assertEqual(why_the_game_ended_reason_id, 8)
+        self.assertEqual(why_the_game_ended_reason_id, GAME_INCONSISTENCY)
 
     def test_that_parsed_response_is_a_hash(self):
 
@@ -183,6 +217,6 @@ class TicTacToeTestSuite(unittest.TestCase):
         self.assertEqual(return_code, 3)
 
 
-#unittest.main()
-GameEngine.start_game()
+unittest.main()
+#GameEngine.start_game()
 
