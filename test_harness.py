@@ -170,7 +170,7 @@ class TicTacToeTestSuite(unittest.TestCase):
         return_code = verify_readiness_of_game_bot(parsed_response)
 
         # assert
-        self.assertEqual(return_code, 11)
+        self.assertEqual(return_code, INPUT_NOT_A_HASH)
     
     def test_that_parsed_response_contains_status_key(self):
 
@@ -182,7 +182,7 @@ class TicTacToeTestSuite(unittest.TestCase):
         return_code = verify_readiness_of_game_bot(parsed_response)
 
         # assert
-        self.assertEqual(return_code, 12)
+        self.assertEqual(return_code, HASH_WITHOUT_STATUS_KEY)
 
     def test_that_status_key_of_parsed_response_points_to_ready(self):
         
@@ -193,7 +193,7 @@ class TicTacToeTestSuite(unittest.TestCase):
         # apply transformation 
         return_code = verify_readiness_of_game_bot(parsed_response)
         # assert
-        self.assertEqual(return_code, 13)
+        self.assertEqual(return_code, VALUE_FOR_STATUS_IS_NOT_READY)
 
 
 unittest.main()
