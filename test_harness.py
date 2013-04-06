@@ -132,8 +132,20 @@ def start_game():
         print STATUS_MESSAGES[return_code]
         exit
 
+    
+    who_moves_next = 1
+    game_state = {
+        'owned_by_x' : [],
+        'owned_by_zero' : []    
+    }
+
     for turn in range(1,10):
         print turn
+        who_moves_next = 3 - who_moves_next
+        return_code = verify_game_state_consistency(game_state, who_moves_next)
+        if return_code !=  DRAW:
+            print STATUS_MESSAGES[return_code]
+            exit
 
 class TicTacToeTestSuite(unittest.TestCase):
 
