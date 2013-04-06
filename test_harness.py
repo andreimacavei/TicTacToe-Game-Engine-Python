@@ -38,6 +38,13 @@ STATUS_MESSAGES = {
 
 }
 
+class PlayerInfo:
+
+    def __init__(self, input_channel, output_channel, player_role):
+        self.input_channel = input_channel
+        self.output_channel = output_channel
+        self.player_role = player_role
+
 def verify_game_state_consistency(game_state, who_moves_next):
 
     why_the_game_ended_reason_id = DRAW
@@ -139,6 +146,19 @@ def start_game():
         'owned_by_zero' : []    
     }
 
+    player_data = {
+        1: PlayerInfo(
+                output_of_game_engine_input_of_player_1,
+                output_of_player_1_input_of_game_engine,
+                'x'
+           ),
+        2: PlayerInfo(
+                output_of_game_engine_input_of_player_2,
+                output_of_player_2_input_of_game_engine,
+                'zero'
+           )
+    }
+    
     for turn in range(1,10):
         print turn
         who_moves_next = 3 - who_moves_next
@@ -146,6 +166,29 @@ def start_game():
         if return_code !=  DRAW:
             print STATUS_MESSAGES[return_code]
             exit
+        
+        request_status = {'request': 'play_your_turn'}
+        # Signal player to make his turn
+        print "waiting to move"
+        
+        f = open(player_data[who_moves_next].input_channel, 'w')
+        print >> f, json.dumps(request_status)
+        f.close()
+       
+
+        print "waiting to read"
+
+        f = open(player_data[who_moves_next].output_channel, 'r')
+        try:
+            raw_response = f.read()
+        finally:
+            f.close()
+        try:
+            parsed_response = json.loads(raw_response)
+        except:
+            print "player ? won"
+            exit
+
 
 class TicTacToeTestSuite(unittest.TestCase):
 
