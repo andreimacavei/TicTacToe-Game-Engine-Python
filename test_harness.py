@@ -38,7 +38,7 @@ STATUS_MESSAGES = {
 
 }
 
-def verify_game_state_consistency(game_state, who_moves_next, player_role_id):
+def verify_game_state_consistency(game_state, who_moves_next):
 
     why_the_game_ended_reason_id = DRAW
     size_of_owned_by_x = len(game_state['owned_by_x'])
@@ -132,6 +132,9 @@ def start_game():
         print STATUS_MESSAGES[return_code]
         exit
 
+    for turn in range(1,10):
+        print turn
+
 class TicTacToeTestSuite(unittest.TestCase):
 
     def test_that_a_player_cannot_move_into_an_already_occupied_board_cell(self):
@@ -161,7 +164,7 @@ class TicTacToeTestSuite(unittest.TestCase):
         player_role_id = 0
 
         # apply_transformation
-        why_the_game_ended_reason_id = verify_game_state_consistency(game_state, who_moves_next, player_role_id)
+        why_the_game_ended_reason_id = verify_game_state_consistency(game_state, who_moves_next)
 
         # assert
         self.assertEqual(why_the_game_ended_reason_id, CROSS_CHECK_FAILED)
@@ -176,7 +179,7 @@ class TicTacToeTestSuite(unittest.TestCase):
         player_role_id = 1
 
         # apply_transformation
-        why_the_game_ended_reason_id = verify_game_state_consistency(game_state, who_moves_next, player_role_id)
+        why_the_game_ended_reason_id = verify_game_state_consistency(game_state, who_moves_next)
 
         # assert
         self.assertEqual(why_the_game_ended_reason_id, CROSS_CHECK_FAILED)
@@ -191,7 +194,7 @@ class TicTacToeTestSuite(unittest.TestCase):
         player_role_id = 0
 
         # apply_transformation
-        why_the_game_ended_reason_id = verify_game_state_consistency(game_state, who_moves_next, player_role_id)
+        why_the_game_ended_reason_id = verify_game_state_consistency(game_state, who_moves_next)
 
         # assert
         self.assertEqual(why_the_game_ended_reason_id, GAME_INCONSISTENCY)
@@ -206,7 +209,7 @@ class TicTacToeTestSuite(unittest.TestCase):
         player_role_id = 0
 
         # apply_transformation
-        why_the_game_ended_reason_id = verify_game_state_consistency(game_state, who_moves_next, player_role_id)
+        why_the_game_ended_reason_id = verify_game_state_consistency(game_state, who_moves_next)
 
         # assert
         self.assertEqual(why_the_game_ended_reason_id, GAME_INCONSISTENCY)
