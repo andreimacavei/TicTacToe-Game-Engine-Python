@@ -40,16 +40,22 @@ STATUS_MESSAGES = {
 
 class PlayerInfo:
 
-    def __init__(self, input_channel, output_channel, player_role):
+    def __init__(self, input_channel, output_channel, player_role, game_state_key):
         self.input_channel = input_channel
         self.output_channel = output_channel
         self.player_role = player_role
+        self.game_state_key = game_state_key
 
 def verify_game_state_consistency(game_state, who_moves_next):
 
     why_the_game_ended_reason_id = DRAW
     size_of_owned_by_x = len(game_state['owned_by_x'])
     size_of_owned_by_zero = len(game_state['owned_by_zero'])
+    
+    print game_state['owned_by_x']
+    print game_state['owned_by_zero']
+    print size_of_owned_by_x
+    print size_of_owned_by_zero
 
     if size_of_owned_by_x == size_of_owned_by_zero:
         player_role_id = 1
@@ -150,24 +156,30 @@ def start_game():
         1: PlayerInfo(
                 output_of_game_engine_input_of_player_1,
                 output_of_player_1_input_of_game_engine,
-                'x'
+                'x',
+                'owned_by_x'
            ),
         2: PlayerInfo(
                 output_of_game_engine_input_of_player_2,
                 output_of_player_2_input_of_game_engine,
-                'zero'
+                'zero',
+                'owned_by_zero'
            )
     }
     
     for turn in range(1,10):
-        print turn
         who_moves_next = 3 - who_moves_next
         return_code = verify_game_state_consistency(game_state, who_moves_next)
         if return_code !=  DRAW:
             print STATUS_MESSAGES[return_code]
             exit
         
-        request_status = {'request': 'play_your_turn'}
+        request_status = {
+            'request': 'play_your_turn',
+            'player_role': player_data[who_moves_next].player_role,
+            'owned_by_x': game_state['owned_by_x'],
+            'owned_by_zero': game_state['owned_by_zero']
+        }
         # Signal player to make his turn
         print "waiting to move"
         
@@ -188,7 +200,12 @@ def start_game():
         except:
             print "player ? won"
             exit
-
+        
+        # show status
+        print parsed_response['turn'].encode('ascii')
+        game_state[player_data[who_moves_next].game_state_key].append(
+            parsed_response['turn'].encode('ascii')
+        )
 
 class TicTacToeTestSuite(unittest.TestCase):
 
