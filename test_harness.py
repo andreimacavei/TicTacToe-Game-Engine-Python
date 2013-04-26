@@ -97,13 +97,13 @@ def start_game():
     request_status = {'request': 'status'}
 
     # Verify readiness of player 1
-    print "waiting to write"
+    print "waiting to write : output -> player1"
 
     f = open(output_of_game_engine_input_of_player_1, 'w')
     print >> f, json.dumps(request_status)
     f.close()
 
-    print "waiting to read"
+    print "waiting to read : input <- player1"
 
     f = open(output_of_player_1_input_of_game_engine, 'r')
     try:
@@ -121,13 +121,13 @@ def start_game():
         exit
 
     # Verify readiness of player 2
-    print "waiting to write"
+    print "waiting to write : output -> player2"
 
     f = open(output_of_game_engine_input_of_player_2, 'w')
     print >> f, json.dumps(request_status)
     f.close()
 
-    print "waiting to read"
+    print "waiting to read : input <- player2"
 
     f = open(output_of_player_2_input_of_game_engine, 'r')
     try:
@@ -145,8 +145,8 @@ def start_game():
         print STATUS_MESSAGES[return_code]
         exit
 
-    
-    who_moves_next = 1
+    # Players are ready - starting the actual game
+    who_moves_next = 2
     game_state = {
         'owned_by_x' : [],
         'owned_by_zero' : []    
@@ -181,14 +181,14 @@ def start_game():
             'owned_by_zero': game_state['owned_by_zero']
         }
         # Signal player to make his turn
-        print "waiting to move"
+        print "waiting to move : player " , who_moves_next
         
         f = open(player_data[who_moves_next].input_channel, 'w')
         print >> f, json.dumps(request_status)
         f.close()
        
 
-        print "waiting to read"
+        print "waiting to read : player " , who_moves_next
 
         f = open(player_data[who_moves_next].output_channel, 'r')
         try:
