@@ -83,18 +83,20 @@ def verify_game_state_consistency(game_state, who_moves_next):
     if size_of_owned_by_x > 1 + size_of_owned_by_zero:
         why_the_game_ended_reason_id = GAME_INCONSISTENCY
     
-    # Check win combinations 
-    if size_of_owned_by_x >= 3:
-        if who_moves_next == 1:
-            if game_state['owned_by_x'] in WIN_COMBINATIONS:
-                why_the_game_ended_reason_id = PLAYER_ONE_WON
-        else:
-            if game_state['owned_by_zero'] in WIN_COMBINATIONS:
-                why_the_game_ended_reason_id = PLAYER_TWO_WON
- 
     return why_the_game_ended_reason_id
 
-# def verify_win_combinations(game_state, player_data)
+def verify_win_combinations(game_state, who_moves_next):
+    game_result = DRAW    
+
+    # Check win combinations 
+    if who_moves_next == 1:
+        if game_state['owned_by_x'] in WIN_COMBINATIONS:
+            game_result = PLAYER_ONE_WON
+    else:
+        if game_state['owned_by_zero'] in WIN_COMBINATIONS:
+            game_result = PLAYER_TWO_WON
+    
+    return game_result
 
 def verify_readiness_of_game_bot(parsed_response):
 
@@ -228,6 +230,14 @@ def start_game():
         game_state[player_data[who_moves_next].game_state_key].append(
             parsed_response['turn'].encode('ascii')
         )
+        
+        # check if the game has a winner
+        if turn >= 5:
+            return_code = verify_win_combinations(game_state, who_moves_next)
+            if return_code != DRAW or turn == 9:
+                print STATUS_MESSAGES[return_code]
+                exit
+
 
 class TicTacToeTestSuite(unittest.TestCase):
 
