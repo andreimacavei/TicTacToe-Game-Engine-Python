@@ -38,6 +38,17 @@ STATUS_MESSAGES = {
 
 }
 
+WIN_COMBINATIONS = [
+    ['a1', 'a2', 'a3'],
+    ['b1', 'b2', 'b3'],
+    ['c1', 'c2', 'c3'],
+    ['a1', 'b1', 'c1'],
+    ['a2', 'b2', 'c2'],
+    ['a3', 'b3', 'c3'],
+    ['a1', 'b2', 'c3'],
+    ['a3', 'b2', 'c3']
+]
+
 class PlayerInfo:
 
     def __init__(self, input_channel, output_channel, player_role, game_state_key):
@@ -51,7 +62,7 @@ def verify_game_state_consistency(game_state, who_moves_next):
     why_the_game_ended_reason_id = DRAW
     size_of_owned_by_x = len(game_state['owned_by_x'])
     size_of_owned_by_zero = len(game_state['owned_by_zero'])
-    
+
     print game_state['owned_by_x']
     print game_state['owned_by_zero']
     print size_of_owned_by_x
@@ -71,8 +82,19 @@ def verify_game_state_consistency(game_state, who_moves_next):
 
     if size_of_owned_by_x > 1 + size_of_owned_by_zero:
         why_the_game_ended_reason_id = GAME_INCONSISTENCY
-
+    
+    # Check win combinations 
+    if size_of_owned_by_x >= 3:
+        if who_moves_next == 1:
+            if game_state['owned_by_x'] in WIN_COMBINATIONS:
+                why_the_game_ended_reason_id = PLAYER_ONE_WON
+        else:
+            if game_state['owned_by_zero'] in WIN_COMBINATIONS:
+                why_the_game_ended_reason_id = PLAYER_TWO_WON
+ 
     return why_the_game_ended_reason_id
+
+# def verify_win_combinations(game_state, player_data)
 
 def verify_readiness_of_game_bot(parsed_response):
 
@@ -86,7 +108,6 @@ def verify_readiness_of_game_bot(parsed_response):
         return VALUE_FOR_STATUS_IS_NOT_READY
 
     return EVERYTHING_OK
-
 
 def start_game():
     output_of_game_engine_input_of_player_1 = sys.argv[1]
@@ -173,13 +194,14 @@ def start_game():
         if return_code !=  DRAW:
             print STATUS_MESSAGES[return_code]
             exit
-        
+       
         request_status = {
             'request': 'play_your_turn',
             'player_role': player_data[who_moves_next].player_role,
             'owned_by_x': game_state['owned_by_x'],
             'owned_by_zero': game_state['owned_by_zero']
         }
+        
         # Signal player to make his turn
         print "waiting to move : player " , who_moves_next
         
