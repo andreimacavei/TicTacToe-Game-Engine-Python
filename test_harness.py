@@ -38,6 +38,8 @@ STATUS_MESSAGES = {
 
 }
 
+BOARD = ['a1', 'a2', 'a3', 'b1', 'b2', 'b3', 'c1', 'c2', 'c3']
+
 WIN_COMBINATIONS = [
     ['a1', 'a2', 'a3'],
     ['b1', 'b2', 'b3'],
@@ -46,7 +48,7 @@ WIN_COMBINATIONS = [
     ['a2', 'b2', 'c2'],
     ['a3', 'b3', 'c3'],
     ['a1', 'b2', 'c3'],
-    ['a3', 'b2', 'c3']
+    ['a3', 'b2', 'c1']
 ]
 
 class PlayerInfo:
@@ -116,11 +118,32 @@ def verify_readiness_of_game_bot(parsed_response):
 
     return EVERYTHING_OK
 
+def verify_that_player_made_legal_move(
+    game_state, parsed_response, who_just_moved
+    ):
+    return_code = {
+        1: ILLEGAL_MOVE_BY_PLAYER_ONE,
+        2: ILLEGAL_MOVE_BY_PLAYER_TWO
+    }
+
+    occupied_cells = game_state['owned_by_x'] + game_state['owned_by_zero']
+ 
+    if (parsed_response['turn'].encode('ascii') not in BOARD or
+        parsed_response['turn'].encode('ascii') in occupied_cells):
+        return return_code[who_just_moved]
+    else:
+        return EVERYTHING_OK 
+
 def start_game():
     output_of_game_engine_input_of_player_1 = sys.argv[1]
     output_of_player_1_input_of_game_engine = sys.argv[2]
     output_of_game_engine_input_of_player_2 = sys.argv[3]
     output_of_player_2_input_of_game_engine = sys.argv[4]
+
+    progress_log = {
+        'score_for_x': 0,
+        'score_for_zero': 0
+    }
 
     request_status = {'request': 'status'}
 
@@ -234,11 +257,18 @@ def start_game():
         game_state[player_data[who_moves_next].game_state_key].append(
             parsed_response['turn'].encode('ascii')
         )
-       
-         
+      
+        # verify if player made illegal move 
+        who_just_moved = who_moves_next 
+        return_code = verify_that_player_made_legal_move(game_state, parsed_response, who_just_moved)       
+        
+        if return_code != EVERYTHING_OK
+            print STATUS_MESSAGES[return_code]
+            exit  
+ 
         # check if the game has a winner
         if turn >= 5:
-            return_code = verify_win_combinations(game_state, who_moves_next)
+            return_code = verify_win_combinations(game_state, who_just_moved)
             if return_code != DRAW or turn == 9:
                 print STATUS_MESSAGES[return_code]
                 exit
