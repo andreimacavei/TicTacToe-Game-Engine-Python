@@ -90,11 +90,15 @@ def verify_win_combinations(game_state, who_moves_next):
 
     # Check win combinations 
     if who_moves_next == 1:
-        if game_state['owned_by_x'] in WIN_COMBINATIONS:
-            game_result = PLAYER_ONE_WON
+        for i in range(len(WIN_COMBINATIONS)):
+            if set(WIN_COMBINATIONS[i]) - set(game_state['owned_by_x']) == set([]):
+                game_result = PLAYER_ONE_WON 
+                break
     else:
-        if game_state['owned_by_zero'] in WIN_COMBINATIONS:
-            game_result = PLAYER_TWO_WON
+        for i in range(len(WIN_COMBINATIONS)):
+            if set(WIN_COMBINATIONS[i]) - set(game_state['owned_by_zero']) == set([]):
+                game_result = PLAYER_TWO_WON 
+                break
     
     return game_result
 
