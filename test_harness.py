@@ -62,6 +62,7 @@ def verify_game_state_consistency(game_state, who_moves_next):
     why_the_game_ended_reason_id = DRAW
     size_of_owned_by_x = len(game_state['owned_by_x'])
     size_of_owned_by_zero = len(game_state['owned_by_zero'])
+    player_role_id = 0    
 
     print game_state['owned_by_x']
     print game_state['owned_by_zero']
@@ -85,11 +86,11 @@ def verify_game_state_consistency(game_state, who_moves_next):
     
     return why_the_game_ended_reason_id
 
-def verify_win_combinations(game_state, who_moves_next):
+def verify_win_combinations(game_state, who_just_moved):
     game_result = DRAW    
 
     # Check win combinations 
-    if who_moves_next == 1:
+    if who_just_moved == 1:
         for comb in WIN_COMBINATIONS:
             if set(comb) - set(game_state['owned_by_x']) == set([]):
                 game_result = PLAYER_ONE_WON 
@@ -173,7 +174,7 @@ def start_game():
         exit
 
     # Players are ready - starting the actual game
-    who_moves_next = 2
+    who_moves_next = 1
     game_state = {
         'owned_by_x' : [],
         'owned_by_zero' : []    
@@ -195,7 +196,6 @@ def start_game():
     }
     
     for turn in range(1,10):
-        who_moves_next = 3 - who_moves_next
         return_code = verify_game_state_consistency(game_state, who_moves_next)
         if return_code !=  DRAW:
             print STATUS_MESSAGES[return_code]
@@ -234,7 +234,8 @@ def start_game():
         game_state[player_data[who_moves_next].game_state_key].append(
             parsed_response['turn'].encode('ascii')
         )
-        
+       
+         
         # check if the game has a winner
         if turn >= 5:
             return_code = verify_win_combinations(game_state, who_moves_next)
@@ -242,6 +243,7 @@ def start_game():
                 print STATUS_MESSAGES[return_code]
                 exit
 
+        who_moves_next = 3 - who_moves_next
 
 class TicTacToeTestSuite(unittest.TestCase):
 
@@ -353,7 +355,48 @@ class TicTacToeTestSuite(unittest.TestCase):
         return_code = verify_readiness_of_game_bot(parsed_response)
         # assert
         self.assertEqual(return_code, VALUE_FOR_STATUS_IS_NOT_READY)
+    
+    def test_corectness_of_verify_win_combinations_1(self):
+        
+        # define input
+        game_state = {}
+        game_state['owned_by_x'] = ['a1', 'b3', 'c1']
+        game_state['owned_by_zero'] = ['a2', 'b1', 'c3']
+        who_just_moved = 2
 
+        # apply transformation
+        game_result = verify_win_combinations(game_state, who_just_moved)
+        
+        # assert
+        self.assertEqual(game_result, DRAW)
+    
+    def test_corectness_of_verify_win_combinations_2(self):
+        
+        # define input
+        game_state = {}
+        game_state['owned_by_x'] = ['a1', 'b3', 'c1', 'b1']
+        game_state['owned_by_zero'] = ['a2', 'b2', 'c3']
+        who_just_moved = 1        
+
+        # apply transformation
+        game_result = verify_win_combinations(game_state, who_just_moved)
+        
+        # assert
+        self.assertEqual(game_result, PLAYER_ONE_WON)
+    
+    def test_corectness_of_verify_win_combinations_3(self):
+        
+        # define input
+        game_state = {}
+        game_state['owned_by_x'] = ['a1', 'b3', 'c1', 'a3']
+        game_state['owned_by_zero'] = ['a2', 'b2', 'c3', 'c2']
+        who_just_moved = 2        
+
+        # apply transformation
+        game_result = verify_win_combinations(game_state, who_just_moved)
+        
+        # assert
+        self.assertEqual(game_result, PLAYER_TWO_WON)
 
 #unittest.main()
 start_game()
