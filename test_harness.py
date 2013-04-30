@@ -130,6 +130,7 @@ def verify_that_player_made_legal_move(
  
     if (parsed_response['turn'].encode('ascii') not in BOARD or
         parsed_response['turn'].encode('ascii') in occupied_cells):
+        print occupied_cells
         return return_code[who_just_moved]
     else:
         return EVERYTHING_OK 
@@ -222,7 +223,7 @@ def start_game():
         return_code = verify_game_state_consistency(game_state, who_moves_next)
         if return_code !=  DRAW:
             print STATUS_MESSAGES[return_code]
-            exit
+            break
        
         request_status = {
             'request': 'play_your_turn',
@@ -250,30 +251,33 @@ def start_game():
             parsed_response = json.loads(raw_response)
         except:
             print "player ? won"
-            exit
-        
+            break
+
+        # verify if player made illegal move 
+        who_just_moved = who_moves_next 
+        return_code = verify_that_player_made_legal_move(game_state, parsed_response, who_just_moved) 
+
         # show status
         print parsed_response['turn'].encode('ascii')
         game_state[player_data[who_moves_next].game_state_key].append(
             parsed_response['turn'].encode('ascii')
         )
       
-        # verify if player made illegal move 
-        who_just_moved = who_moves_next 
-        return_code = verify_that_player_made_legal_move(game_state, parsed_response, who_just_moved)       
+              
         
-        if return_code != EVERYTHING_OK
+        if return_code != EVERYTHING_OK:
             print STATUS_MESSAGES[return_code]
-            exit  
+            break  
  
         # check if the game has a winner
         if turn >= 5:
             return_code = verify_win_combinations(game_state, who_just_moved)
             if return_code != DRAW or turn == 9:
                 print STATUS_MESSAGES[return_code]
-                exit
+                break
 
         who_moves_next = 3 - who_moves_next
+
 
 class TicTacToeTestSuite(unittest.TestCase):
 
